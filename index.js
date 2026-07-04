@@ -6,7 +6,6 @@ const PORT = process.env.PORT
 const routes = require('./src/routes');
 
 app.use(express.json());
-
 app.use(routes);
 
 app.get('/', (req, res) => {
