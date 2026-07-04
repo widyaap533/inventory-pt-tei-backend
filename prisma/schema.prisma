@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js" 
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Staff {
+  id         String   @id @default(uuid()) @db.Char(36) 
+  username   String   @unique @db.VarChar(100)
+  password   String   @db.VarChar(255)
+  name       String   @db.VarChar(255)
+  position   String   @db.VarChar(255)
+
+  is_delete  Boolean  @default(false)
+  created_at DateTime @default(now())
+  created_by String?  @db.Char(36)
+  updated_at DateTime @updatedAt
+  updated_by String?  @db.Char(36)
+}
+
+model Device {
+  id         String   @id @default(uuid()) @db.Char(36)
+  name       String   @db.VarChar(255) // Diseragamkan ke 255
+  stok       Int      @default(0)
+
+  is_delete  Boolean  @default(false)
+  created_at DateTime @default(now())
+  created_by String?  @db.Char(36)
+  updated_at DateTime @updatedAt
+  updated_by String?  @db.Char(36)
+
+  // Relasi ke tabel Detail Transaksi
+  detail_transaction DetailTransaction[] 
+}
+
+model Category {
+  id         String   @id @default(uuid()) @db.Char(36)
+  name       String   @db.VarChar(255) // Diseragamkan ke 255
+
+  is_delete  Boolean  @default(false)
+  created_at DateTime @default(now())
+  created_by String?  @db.Char(36)
+  updated_at DateTime @updatedAt
+  updated_by String?  @db.Char(36)
+
+  // Relasi ke tabel Transaksi
+  transaction Transaction[]
+}
+
+model Transaction {
+  id             String   @id @default(uuid()) @db.Char(36)
+  id_staff       String   @db.VarChar(255) 
+  id_category    String   @db.Char(36)
+  departure_date DateTime @db.Date        
+  time_out       String   @db.VarChar(10)
+  
+  is_delete      Boolean  @default(false)
+  created_at     DateTime @default(now())
+  created_by     String?  @db.Char(36)
+  updated_at     DateTime @updatedAt
+  updated_by     String?  @db.Char(36)
+
+  category           Category            @relation(fields: [id_category], references: [id], onUpdate: Cascade)
+  detail_transaction DetailTransaction[] 
+}
+
+model DetailTransaction { // Disesuaikan menjadi PascalCase
+  id             String   @id @default(uuid()) @db.Char(36)
+  id_transaction String   @db.Char(36)
+  id_device      String   @db.Char(36)
+  amount         Int      @default(1) 
+
+  // Relasi
+  transaction    Transaction @relation(fields: [id_transaction], references: [id], onDelete: Cascade)
+  device         Device      @relation(fields: [id_device], references: [id], onUpdate: Cascade)
+
+  @@index([id_transaction])
+  @@index([id_device])
+}
