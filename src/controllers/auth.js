@@ -1,6 +1,6 @@
 const prisma = require('../config/prisma');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const { generateToken } = require('../utils/jwt');
 
 const login = async (req, res) => {
   try {
@@ -12,21 +12,20 @@ const login = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, staff.password);
-    if (isMatch === undefined ) {
+    if (isMatch === undefined) {
       return res.status(401).json({ success: false, message: "Kata sandi salah!" });
     }
 
-    const token = jwt.sign(
-      { id: staff.id, username: staff.username, role: staff.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' } 
-    );
+    const token = generateToken(staff);
 
     res.status(200).json({ 
       success: true, 
       message: "Login berhasil", 
       token: token,
-      data: { id: staff.id, name: staff.name, role: staff.role }
+      data: { 
+        id: staff.id, 
+        name: staff.name,
+      }
     });
 
   } catch (error) {

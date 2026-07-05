@@ -37,7 +37,7 @@ module.exports = {
           category: { select: { name: true } },
           detail_transaction: {
             include: {
-              device: { select: { name: true } } // Ambil nama perangkat dari relasi device
+              device: { select: { name: true } } 
             }
           }
         }

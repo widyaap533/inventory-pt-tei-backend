@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-//const authRoutes = require('./auth');
 const staff = require('./staff');
 const device = require('./device');
 const category = require('./category');
