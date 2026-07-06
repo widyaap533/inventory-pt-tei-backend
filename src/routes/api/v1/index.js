@@ -1,14 +1,10 @@
-const express = require('express');
-const router = express.Router();
+// const express = require('express');
+// const router = express.Router();
 
-const staff = require('./staff');
-const device = require('./device');
-const category = require('./category');
-const transaction = require('./transaction');
+// const staff = require('./staff');
+// const category = require('./category');
 
-router.use(staff);
-router.use(device);
-router.use(category);
-router.use(transaction);
+// router.use(staff);
+// router.use(category);
 
-module.exports = router;
+// module.exports = router;
