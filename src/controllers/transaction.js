@@ -5,25 +5,57 @@ module.exports = {
     try {
       const transactionList = await prisma.transaction.findMany({
         where: { is_delete: false },
-        include: {
-          category: { select: { name: true } },
-          _count: { select: { detail_transaction: true } }
+        select: {
+          id: true,
+          id_staff: true,
+          departure_date: true,
+          time_out: true,
+          category: { 
+            select: { name: true } 
+          },
+          detail_transaction: {
+            select: {
+              amount: true, 
+              device: {
+                select: {
+                  name: true,
+                  stok: true 
+                }
+              }
+            }
+          }
         },
         orderBy: { created_at: 'desc' } 
       });
-
+      
       if (transactionList.length === 0) {
-        return res.status(404).json({ status: 'error', message: 'Daftar Transaksi tidak ditemukan' });
+        return res.status(404).json({ success: false, message: 'Daftar transaksi tidak ditemukan' });
       }
 
-      return res.status(200).json({
-        status: 'success',
-        message: 'Berhasil mengambil data transaksi',
-        data: transactionList
+      const formattedData = transactionList.map((trx) => {
+        return {
+          id: trx.id,
+          id_staff: trx.id_staff,
+          departure_date: trx.departure_date,
+          time_out: trx.time_out,
+          category_name: trx.category?.name,
+          borrowed_items: trx.detail_transaction.map((detail) => ({
+            device_name: detail.device?.name,
+            quantity: detail.amount,
+            available: detail.device?.stok
+          }))
+        };
       });
+
+      return res.status(200).json({
+        success: true,
+        message: "Berhasil mengambil data transaksi",
+        data: formattedData
+      });
+
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+      return res.status(500).json({ success: false, message: error.message });
     }
   },
 
@@ -32,25 +64,58 @@ module.exports = {
       const { id } = req.params;
 
       const transaction = await prisma.transaction.findFirst({
-        where: { id: id, is_delete: false },
-        include: {
-          category: { select: { name: true } },
+        where: { 
+          id: id, 
+          is_delete: false 
+        },
+        select: {
+          id: true,
+          id_staff: true,
+          departure_date: true,
+          time_out: true,
+          category: { 
+            select: { name: true } 
+          },
           detail_transaction: {
-            include: {
-              device: { select: { name: true } } 
+            select: {
+              amount: true,
+              device: { 
+                select: { 
+                  name: true, 
+                  stok: true 
+                } 
+              }
             }
           }
         }
       });
 
       if (transaction === undefined) {
-        return res.status(404).json({ status: 'error', message: 'Transaksi tidak ditemukan' });
+        return res.status(404).json({ success: false, message: 'Transaksi tidak ditemukan' });
       }
 
-      return res.status(200).json({ status: 'success', data: transaction });
+      const formattedData = {
+        id: transaction.id,
+        id_staff: transaction.id_staff,
+        departure_date: transaction.departure_date,
+        time_out: transaction.time_out,
+        category_name: transaction.category?.name,
+        borrowed_items: transaction.detail_transaction.map((detail) => ({
+          device_name: detail.device?.name,
+          quantity: detail.amount,
+          available: detail.device?.stok
+        }))
+      };
+
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Berhasil mengambil detail transaksi',
+        data: formattedData 
+      });
+
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ status: 'error', message: 'Gagal mengambil detail transaksi' });
+      return res.status(500).json({ success: false, message: 'Gagal mengambil detail transaksi' });
     }
   },
 
