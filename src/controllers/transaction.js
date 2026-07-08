@@ -120,15 +120,27 @@ module.exports = {
   },
 
   createTransaction: async (req, res) => {
-    const { id_staff, id_category, departure_date, time_out, details } = req.body;
+    const { id_kartu, id_category, departure_date, time_out, details } = req.body;
 
-    if (id_staff === undefined || id_category === undefined || departure_date === undefined || time_out === undefined || details.length === 0) {
+    if (id_kartu === null || id_category === null || departure_date === null || time_out === null || details.length === 0) {
       return res.status(400).json({ status: 'error', message: 'Data tidak lengkap atau detail perangkat kosong' });
     }
 
     try {
-      const result = await prisma.$transaction(async (tx) => {
+      const staff = await prisma.staff.findFirst({
+        where: { 
+          id_kartu: id_kartu,
+          is_delete: false 
+        }
+      });
+      if (staff === null) {
+        return res.status(404).json({ 
+          status: 'error', 
+          message: 'Akses ditolak. ID Kartu tidak terdaftar di sistem' 
+        });
+      }
 
+      const result = await prisma.$transaction(async (tx) => {
         const category = await tx.category.findFirst({ where: { id: id_category, is_delete: false } });
         if (category === undefined) throw new Error('Kategori tidak ditemukan atau sudah dihapus');
 
@@ -150,7 +162,7 @@ module.exports = {
 
         const newTransaction = await tx.transaction.create({
           data: {
-            id_staff: id_staff,
+            id_staff: staff.id,
             id_category: id_category,
             departure_date: new Date(departure_date),
             time_out: time_out,

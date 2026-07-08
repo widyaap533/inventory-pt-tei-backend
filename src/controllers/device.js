@@ -33,7 +33,7 @@ module.exports = {
     try {
       const { name, stok } = req.body;
 
-      if (name === undefined) {
+      if (name === null) {
         return res.status(400).json({ status: 'error', message: 'Nama device wajib diisi' });
       }
 
@@ -77,7 +77,7 @@ module.exports = {
         }
       });
 
-      if (device === undefined) {
+      if (device === null) {
         return res.status(404).json({ status: 'error', message: 'Device tidak ditemukan' });
       }
 
@@ -97,7 +97,7 @@ module.exports = {
         where: { id: id, is_delete: false }
       });
 
-      if (existingDevice === undefined) {
+      if (existingDevice === null) {
         return res.status(404).json({ status: 'error', message: 'Device tidak ditemukan' });
       }
 
@@ -134,7 +134,7 @@ module.exports = {
         where: { id: id, is_delete: false }
       });
 
-      if (existingDevice === undefined) {
+      if (existingDevice === null) {
         return res.status(404).json({ status: 'error', message: 'Device tidak ditemukan' });
       }
 
