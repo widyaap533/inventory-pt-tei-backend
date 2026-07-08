@@ -13,6 +13,7 @@ datasource db {
 
 model Staff {
   id         String   @id @default(uuid()) @db.Char(36) 
+  id_kartu   String?  @unique @db.VarChar(100)
   username   String   @unique @db.VarChar(100)
   password   String   @db.VarChar(255)
   name       String   @db.VarChar(255)

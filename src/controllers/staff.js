@@ -4,16 +4,27 @@ const { hashPassword } = require('../utils/hash');
 module.exports = {
   createStaff: async (req, res) => {
     try {
-      const { username, password, name, position } = req.body;
+      const { username, password, name, position, id_kartu } = req.body;
+      if (id_kartu !== undefined) {
+        const existingCard = await prisma.staff.findUnique({
+          where: { id_kartu: id_kartu }
+        });
+        if (existingCard !== null) {
+          return res.status(400).json({ 
+            status: 'error', 
+            message: 'ID Kartu sudah terdaftar pada staff lain' 
+          });
+        }
+      }
 
       const hashedPassword = await hashPassword(password);
-
       const newStaff = await prisma.staff.create({
         data: {
           username,
           password: hashedPassword, 
           name,
-          position
+          position,
+          id_kartu: id_kartu
         }
       });
 
@@ -22,7 +33,8 @@ module.exports = {
         message: 'Staff berhasil ditambahkan',
         data: {
           id: newStaff.id,
-          username: newStaff.username
+          username: newStaff.username,
+          id_kartu: newStaff.id_kartu
         }
       });
     } catch (error) {
@@ -42,6 +54,7 @@ module.exports = {
         },
         select: {
           id: true,
+          id_kartu: true,
           username: true,
           name: true,
           position: true,
@@ -49,10 +62,9 @@ module.exports = {
         }
       });
 
-      if (staff === undefined) {
+      if (staff === null) {
         return res.status(404).json({ status: 'error', message: 'Staff tidak ditemukan' });
       }
-
       return res.status(200).json({ status: 'success', data: staff });
     } catch (error) {
       console.error(error);

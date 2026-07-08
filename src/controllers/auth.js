@@ -7,7 +7,7 @@ const login = async (req, res) => {
     const { username, password } = req.body;
 
     const existingStaff = await prisma.staff.findUnique({ where: { username } });
-    if (existingStaff === undefined) {
+    if (existingStaff === null) {
       return res.status(404).json({ success: false, message: "Akun tidak ditemukan!" });
     }
 

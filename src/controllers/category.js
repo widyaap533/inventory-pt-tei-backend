@@ -71,7 +71,7 @@ module.exports = {
         }
       });
 
-      if (category === undefined) {
+      if (category === null) {
         return res.status(404).json({ status: 'error', message: 'Kategori tidak ditemukan' });
       }
 
@@ -91,11 +91,11 @@ module.exports = {
         where: { id: id, is_delete: false }
       });
 
-      if (existingCategory === undefined) {
+      if (existingCategory === null) {
         return res.status(404).json({ status: 'error', message: 'Kategori tidak ditemukan' });
       }
 
-      if (name === undefined) {
+      if (name === null) {
         return res.status(400).json({ status: 'error', message: 'Nama kategori tidak boleh kosong' });
       }
 
@@ -126,7 +126,7 @@ module.exports = {
         where: { id: id, is_delete: false }
       });
 
-      if (existingCategory === undefined) {
+      if (existingCategory === null) {
         return res.status(404).json({ status: 'error', message: 'Kategori tidak ditemukan' });
       }
 
