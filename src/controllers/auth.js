@@ -10,6 +10,12 @@ const login = async (req, res) => {
     if (existingStaff === null) {
       return res.status(404).json({ success: false, message: "Akun tidak ditemukan!" });
     }
+    if (existingStaff.position.toLowerCase() !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Akses ditolak! Hanya Admin yang diizinkan masuk ke dashboard." 
+      });
+    }
 
     const isMatch = await comparePassword(password, existingStaff.password);
     if (isMatch === false) {
@@ -24,10 +30,12 @@ const login = async (req, res) => {
       data: { 
         id: existingStaff.id, 
         name: existingStaff.name,
+        position: existingStaff.position
       }
     });
 
   } catch (error) {
+    console.log(error)
     res.status(500).json({ success: false, message: error.message });
   }
 };
