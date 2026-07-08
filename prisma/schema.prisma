@@ -24,6 +24,8 @@ model Staff {
   created_by String?  @db.Char(36)
   updated_at DateTime @updatedAt
   updated_by String?  @db.Char(36)
+
+  transaction Transaction[]
 }
 
 model Device {
@@ -68,6 +70,7 @@ model Transaction {
   updated_at     DateTime @updatedAt
   updated_by     String?  @db.Char(36)
 
+  staff              Staff    @relation(fields: [id_staff], references: [id])
   category           Category            @relation(fields: [id_category], references: [id], onUpdate: Cascade)
   detail_transaction DetailTransaction[] 
 }

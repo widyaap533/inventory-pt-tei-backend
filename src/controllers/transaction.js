@@ -8,6 +8,12 @@ module.exports = {
         select: {
           id: true,
           id_staff: true,
+          staff: { 
+            select: {
+              name: true,
+              id_kartu: true
+            }
+          },
           departure_date: true,
           time_out: true,
           category: { 
@@ -36,6 +42,8 @@ module.exports = {
         return {
           id: trx.id,
           id_staff: trx.id_staff,
+          staff_name: trx.staff?.name,
+          id_kartu: trx.staff?.id_kartu,
           departure_date: trx.departure_date,
           time_out: trx.time_out,
           category_name: trx.category?.name,
@@ -71,6 +79,12 @@ module.exports = {
         select: {
           id: true,
           id_staff: true,
+          staff: { 
+            select: {
+              name: true,
+              id_kartu: true
+            }
+          },
           departure_date: true,
           time_out: true,
           category: { 
